@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,24 +42,34 @@ fun CounselorsScreen(viewModel: CounselorsViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Counselors", color = Color.White) },
-                modifier = Modifier.height(48.dp), // Adjusted height to match your requirements
+                title = {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+                        Text(
+                            "MICSS",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 8.dp) // Adjusted padding to move title left
+                        )
+                    }
+                },
+                modifier = Modifier.height(64.dp), // Adjusted height to match your requirements
                 colors = topAppBarColors(
                     containerColor = Color(220, 87, 45)
                 )
             )
-        },
+        }
+,
         content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 56.dp, start = 8.dp, end = 8.dp) // Adjusted top padding to accommodate TopAppBar height
+                    .padding(top = 72.dp, start = 8.dp, end = 8.dp) // Adjusted top padding to accommodate TopAppBar height and some space
             ) {
                 counselors.forEach { counselor ->
                     DisplayCounselorInfo(counselor = counselor) {
                         onCounselorClick(counselor)
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp)) // Reduced the space between cards
                 }
             }
         }
@@ -77,7 +88,7 @@ fun DisplayCounselorInfo(counselor: Counselor, onClick: () -> Unit) {
 
     Box(
         modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 4.dp) // Reduced vertical padding
+            .padding(vertical = 4.dp, horizontal = 4.dp) // Further reduced vertical padding
             .fillMaxWidth()
             .shadow(4.dp, RoundedCornerShape(24.dp)) // Increased rounded corners
             .background(Color.White, RoundedCornerShape(24.dp))
@@ -108,7 +119,7 @@ fun DisplayCounselorInfo(counselor: Counselor, onClick: () -> Unit) {
                     .size(48.dp) // Adjust image size to fit better within the card
                     .clip(CircleShape)
             )
-            Spacer(modifier = Modifier.width(12.dp)) // Reduced spacer width
+            Spacer(modifier = Modifier.width(8.dp)) // Further reduced spacer width
             Column {
                 Text(
                     text = counselor.name,
