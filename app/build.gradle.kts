@@ -78,6 +78,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.6.8")
     implementation ("androidx.navigation:navigation-compose:2.8.0-beta05")
     implementation("androidx.compose.material3:material3-android:1.2.1")
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
 
     // Removed duplicate and conflicting dependencies
     // Keeping only necessary dependencies
