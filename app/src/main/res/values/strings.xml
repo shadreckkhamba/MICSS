@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MICSS</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_phone_number">Phone Number</string>
+    <string name="label_district">District</string>
+    <string name="label_area">Area</string>
+    <string name="label_sex">Sex</string>
+    <string name="label_age">Age</string>
+    <string name="button_login">Login</string>
+    <string name="text_not_a_user">Not a user? SIGN UP</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="text_already_have_account">Already have an account? LOGIN</string>
+    <string name="error_required_field"> *</string>
+    <string name="error_fill_fields">Please fill all fields correctly</string>
+    <string name="error_valid_email_password">Please enter valid email and password</string>
+</resources>

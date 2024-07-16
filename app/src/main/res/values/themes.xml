@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="Theme.MICSS" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize colors and other attributes -->
+        <item name="colorPrimary">@color/orange</item>
+        <!-- Add other theme attributes as needed -->
+
+        <item name="android:statusBarColor">#DC572D</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
