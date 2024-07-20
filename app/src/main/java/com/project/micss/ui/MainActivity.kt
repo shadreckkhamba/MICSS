@@ -22,7 +22,6 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -106,7 +105,7 @@ fun MainScreen() {
                     composable("home") { HomeScreen(snackbarHostState) }
                     composable("counselors") {
                         // Show the CounselorsScreen without Scaffold components
-                        CounselorsScreen()
+                        CounselorsScreen(navController = navController)
                     }
                     // Add other composable destinations here
                 }
@@ -241,7 +240,7 @@ fun TopicCard(topic: Topic) {
             .clickable(
                 onClick = { /* Handle click */ },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true, color = Color.Gray)
+                indication = rememberRipple(bounded = true, color = Color(220, 87, 4))
             ),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -271,7 +270,7 @@ fun TopicCard(topic: Topic) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun BottomNavigationBar(navController: NavController) {
     BottomNavigation(
         backgroundColor = Color(0xFFDC572D)
     ) {
@@ -348,6 +347,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
     }
 }
+
+
 
 
 @Composable

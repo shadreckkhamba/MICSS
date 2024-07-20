@@ -1,5 +1,6 @@
 package com.project.micss.ui
 
+import NoInternetScreen
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,11 +8,15 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +26,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -29,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.project.micss.LoginViewModel
 import com.project.micss.R
+import kotlinx.coroutines.delay
 
 class LoginActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -38,17 +47,72 @@ class LoginActivity : ComponentActivity() {
         auth = FirebaseAuth.getInstance()
         setContent {
             MaterialTheme {
-                LoginScreen(auth)
+                NetworkAndContentScreen(auth)
             }
         }
     }
 }
 
-enum class LoginState {
-    LOGIN, SIGN_UP
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NetworkAndContentScreen(auth: FirebaseAuth) {
+    var isNetworkAvailable by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    val context = LocalContext.current
+
+    // Check network availability
+    LaunchedEffect(Unit) {
+        // Simulate network check (you should replace this with actual network check logic)
+        isNetworkAvailable = NetworkUtils.isNetworkAvailable(context)
+        delay(4000) // Simulate loading time
+        isLoading = false
+    }
+
+    if (isLoading) {
+        LoadingScreen()
+    } else if (isNetworkAvailable) {
+        LoginScreen(auth)
+    } else {
+        NoInternetScreen()
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(220, 87, 45, 242)), // Background color
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "MICSS",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp)) // Spacing between text and indicator
+            Text(
+                text = "Mobile Integrated Counseling Support System",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White
+                )
+            )
+            Spacer(modifier = Modifier.height(24.dp)) // Spacing between text and loading indicator
+            CircularProgressIndicator(
+                color = Color.White // Loading symbol color
+            )
+        }
+    }
+}
+
+
+
 @Composable
 fun LoginScreen(auth: FirebaseAuth, viewModel: LoginViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
@@ -59,6 +123,7 @@ fun LoginScreen(auth: FirebaseAuth, viewModel: LoginViewModel = viewModel()) {
     var sex by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var attemptSubmit by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) } // State for password visibility
 
     val context = LocalContext.current
     val authResult by viewModel.authResult.collectAsState()
@@ -103,7 +168,7 @@ fun LoginScreen(auth: FirebaseAuth, viewModel: LoginViewModel = viewModel()) {
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Password TextField with Error Handling
+        // Password TextField with Error Handling and Toggle Visibility
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -114,6 +179,15 @@ fun LoginScreen(auth: FirebaseAuth, viewModel: LoginViewModel = viewModel()) {
                         color = if (attemptSubmit && password.isEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 )
+            },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), // Toggle visibility
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -245,6 +319,7 @@ fun LoginScreen(auth: FirebaseAuth, viewModel: LoginViewModel = viewModel()) {
         )
     }
 }
+
 
 fun isValidEmail(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()

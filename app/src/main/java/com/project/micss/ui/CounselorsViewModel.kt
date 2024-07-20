@@ -11,9 +11,12 @@ import kotlinx.coroutines.launch
 
 data class Counselor(
     val name: String = "",
-    val expertise: String = "",
+    val expertise: List<String> = emptyList(),
     val profilePictureUrl: String = "",
-    val availability: String = "",
+    val availability: List<String> = emptyList(),
+    val contactDetails: String = "",
+    val phone: String = "",
+    val district: String = "",
     val email: String = ""
 )
 
