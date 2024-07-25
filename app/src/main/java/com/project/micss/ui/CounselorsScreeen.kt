@@ -27,6 +27,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
@@ -42,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -80,6 +82,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CounselorsScreen(navController: NavController) {
+    val viewModel: AppointmentViewModel = viewModel()
     var isLoading by remember { mutableStateOf(true) }
     var selectedCounselor by remember { mutableStateOf<Counselor?>(null) }
     var showDialog by remember { mutableStateOf(false) }
@@ -336,21 +339,52 @@ fun CounselorsScreen(navController: NavController) {
                 onDismissRequest = { showDialog = false },
                 onConfirm = { date, time, language, age ->
                     val message = "Appointment scheduled with ${selectedCounselor?.name} on $date at $time"
+
                     scope.launch {
                         snackbarHostState.showSnackbar(message)
                     }
+
+                    // Create the Appointment object and save it
+                    val appointment = Appointment(
+                        date = date,
+                        time = time,
+                        status = "Scheduled",
+                        clientName = "ClientName", // Replace with actual client name
+                        counselorName = selectedCounselor?.name ?: "Unknown",
+                        expertise = (selectedCounselor?.expertise ?: "Unknown").toString(),
+                        profilePictureUrl = selectedCounselor?.profilePictureUrl ?: ""
+                    )
+
+                    viewModel.addAppointment(appointment)
+
+                    // Navigate to AppointmentsScreen with appointment details
+                    navController.navigate("appointments") {
+                        popUpTo("counselors") { inclusive = true }
+                    }
+
                     showDialog = false
-                }
+                },
+                viewModel = viewModel(),
+                counselorName = selectedCounselor?.name ?: "Unknown",
+                expertise = (selectedCounselor?.expertise ?: "Unknown").toString(),
+                profilePictureUrl = selectedCounselor?.profilePictureUrl ?: ""
             )
         }
 
-        // SnackbarHost to display Snackbars
+
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            snackbar = { snackbarData ->
-                CustomSnackbar(snackbarData = snackbarData)
-            }
+            snackbar = { data ->
+                Snackbar(
+                    action = {
+                        Icon(Icons.Default.Check, contentDescription = "Check", modifier = Modifier.size(20.dp))
+                    },
+                    content = {
+                        Text(text = data.visuals.message)
+                    }
+                )
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }

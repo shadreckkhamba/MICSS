@@ -36,11 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.project.micss.R
@@ -52,7 +50,11 @@ import java.util.Locale
 @Composable
 fun BookAppointmentDialog(
     onDismissRequest: () -> Unit,
-    onConfirm: (date: String, time: String, language: String, age: String) -> Unit
+    onConfirm: (date: String, time: String, language: String, age: String) -> Unit,
+    counselorName: String,
+    expertise: String,
+    profilePictureUrl: String,
+    viewModel: AppointmentViewModel
 ) {
     val context = LocalContext.current
     var date by remember { mutableStateOf("") }
@@ -103,12 +105,24 @@ fun BookAppointmentDialog(
                 }
 
                 if (!hasError) {
+                    val appointment = Appointment(
+                        date = date,
+                        time = time,
+                        language = language,
+                        age = age,
+                        counselorName = counselorName,
+                        expertise = expertise,
+                        profilePictureUrl = profilePictureUrl
+                    )
+                    viewModel.addAppointment(appointment)
                     onConfirm(date, time, language, age)
+                    onDismissRequest() // Dismiss dialog after confirmation
                 }
             }) {
                 Text("Set", color = Color(220, 87, 45)) // Set primary color
             }
         },
+
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text("Cancel", color = Color(220, 87, 45)) // Set primary color
@@ -280,26 +294,30 @@ fun BookAppointmentDialog(
                             .align(Alignment.TopStart) // Align menu to the start of the Box
                     ) {
                         languages.forEach { lang ->
-                            DropdownMenuItem(onClick = {
-                                language = lang
-                                expanded = false
-                            }) {
-                                Text(
-                                    text = lang,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp) // Adjust padding for better appearance
-                                )
+                            DropdownMenuItem(
+                                onClick = {
+                                    language = lang
+                                    expanded = false
+                                }
+                            ) {
+                                Text(lang)
                             }
                         }
                     }
+
                 }
 
-                // Age
+                // Age Input
                 TextField(
                     value = age,
-                    onValueChange = { age = it },
+                    onValueChange = { newValue ->
+                        if (newValue.all { it.isDigit() }) {
+                            age = newValue
+                        }
+                    },
                     label = { Text("Age") },
+                    placeholder = { Text("Enter age") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
@@ -312,24 +330,22 @@ fun BookAppointmentDialog(
                         unfocusedIndicatorColor = Color.Transparent // Remove the line under unfocused
                     ),
                     isError = ageError != null,
-                    supportingText = { ageError?.let { Text(it, color = Color.Red) } },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    supportingText = { ageError?.let { Text(it, color = Color.Red) } }
                 )
             }
-        },
-        shape = RoundedCornerShape(16.dp),
+        }, shape = RoundedCornerShape(16.dp),
         containerColor = Color.White
     )
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewBookAppointmentDialog() {
-    BookAppointmentDialog(
-        onDismissRequest = {},
-        onConfirm = { date, time, language, age ->
-            // Handle confirm action
-        }
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewBookAppointmentDialog() {
+//    BookAppointmentDialog(
+//        onDismissRequest = {},
+//        onConfirm = { date, time, language, age ->
+//            // Handle confirm action
+//        }
+//    )
+//}

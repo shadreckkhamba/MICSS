@@ -61,7 +61,7 @@ fun CounselorDetailBottomSheet(
                     onClick = onScheduleAppointmentClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Schedule Appointment")
+                    Text("Schedule com.project.micss.ui.Appointment")
                 }
             }
         },

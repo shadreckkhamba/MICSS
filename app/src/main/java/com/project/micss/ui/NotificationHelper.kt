@@ -24,7 +24,7 @@ class NotificationHelper(private val context: Context) {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Appointment Notifications"
+            val name = "com.project.micss.ui.Appointment Notifications"
             val descriptionText = "Channel for appointment notifications"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
@@ -45,8 +45,8 @@ class NotificationHelper(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification) // Replace with your notification icon
-            .setContentTitle("Appointment Scheduled")
-            .setContentText("Appointment with $counselorName on $date at $time")
+            .setContentTitle("com.project.micss.ui.Appointment Scheduled")
+            .setContentText("com.project.micss.ui.Appointment with $counselorName on $date at $time")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

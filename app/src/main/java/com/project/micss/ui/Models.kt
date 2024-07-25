@@ -6,13 +6,16 @@ data class Topic(
     val title: String = "",
     val imageUrl: String = ""
 )
-//
-//// Data class representing a Counselor
-//data class Counselor(
-//    val name: String = "",
-//    val availability: String = "",
-//    val contactDetails: String = "",
-//    val expertise: String = "",
-//    val phone: String = "",
-//    val profilePictureUrl: String = ""
-//)
+
+data class Appointment(
+    val id: String = "",
+    val counselorName: String = "",
+    val date: String = "",
+    val time: String = "",
+    val clientName: String = "",
+    val status: String = "Pending",
+    val expertise: String = "",
+    val profilePictureUrl: String = "",
+    val age: String = "",
+    val language: String = ""
+)

@@ -16,9 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
@@ -65,7 +63,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val scope = rememberCoroutineScope()
@@ -75,7 +72,8 @@ fun MainScreen() {
     Scaffold(
         topBar = {
             val currentBackStackEntry by navController.currentBackStackEntryAsState()
-            if (currentBackStackEntry?.destination?.route != "counselors") {
+            if (currentBackStackEntry?.destination?.route != "counselors" &&
+                currentBackStackEntry?.destination?.route != "appointments") {
                 TopAppBar()
             }
         },
@@ -102,10 +100,14 @@ fun MainScreen() {
                     startDestination = "home",
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    composable("home") { HomeScreen(snackbarHostState) }
+                    composable("home") { HomeScreen() }
                     composable("counselors") {
                         // Show the CounselorsScreen without Scaffold components
                         CounselorsScreen(navController = navController)
+                    }
+                    composable("appointments") {
+                        // Show the AppointmentsScreen with its own custom top bar
+                        AppointmentsScreen(navController = navController)
                     }
                     // Add other composable destinations here
                 }
@@ -114,9 +116,8 @@ fun MainScreen() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(snackbarHostState: SnackbarHostState) {
+fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -177,6 +178,9 @@ fun TopAppBar() {
     )
 }
 
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar() {
@@ -201,7 +205,6 @@ fun SearchBar() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrendingTopicsSection() {
     val topics = listOf(
@@ -227,7 +230,6 @@ fun TrendingTopicsSection() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopicCard(topic: Topic) {
     Card(
@@ -268,7 +270,6 @@ fun TopicCard(topic: Topic) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     BottomNavigation(
@@ -321,7 +322,7 @@ fun BottomNavigationBar(navController: NavController) {
             },
             label = {
                 Text(
-                    "Appointment",
+                    "com.project.micss.ui.Appointment",
                     color = Color.White
                 )
             },
