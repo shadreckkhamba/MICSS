@@ -52,10 +52,11 @@ fun BookAppointmentDialog(
     onDismissRequest: () -> Unit,
     onConfirm: (date: String, time: String, language: String, age: String) -> Unit,
     counselorName: String,
-    expertise: String,
+    expertise: List<String> = listOf(),
     profilePictureUrl: String,
     viewModel: AppointmentViewModel
 ) {
+    //get the current context
     val context = LocalContext.current
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
@@ -68,7 +69,7 @@ fun BookAppointmentDialog(
     var languageError by remember { mutableStateOf<String?>(null) }
     var ageError by remember { mutableStateOf<String?>(null) }
 
-    // Dropdown Menu state
+    // Dropdown Menu state(I included Chichewa and English only)
     var expanded by remember { mutableStateOf(false) }
     val languages = listOf("Chichewa", "English")
 
@@ -116,18 +117,19 @@ fun BookAppointmentDialog(
                     )
                     viewModel.addAppointment(appointment)
                     onConfirm(date, time, language, age)
-                    onDismissRequest() // Dismiss dialog after confirmation
+                    onDismissRequest() // Dismiss dialog after confirmation of entered details
                 }
             }) {
-                Text("Set", color = Color(220, 87, 45)) // Set primary color
+                Text("Set", color = Color(220, 87, 45))
             }
         },
 
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancel", color = Color(220, 87, 45)) // Set primary color
+                Text("Cancel", color = Color(220, 87, 45))
             }
-        },
+        }
+        ,
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -140,7 +142,7 @@ fun BookAppointmentDialog(
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color(220, 87, 45) // Set primary color
+                        color = Color(220, 87, 45)
                     )
                 )
             }
@@ -183,9 +185,9 @@ fun BookAppointmentDialog(
                             ).show()
                         }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.set_calendar), // Replace with your date drawable
+                                painter = painterResource(id = R.drawable.set_calendar), // date drawable
                                 contentDescription = "Select date",
-                                tint = Color(220, 87, 45) // Set icon color here
+                                tint = Color(220, 87, 45) // Set icon color
                             )
                         }
                     },
@@ -229,7 +231,7 @@ fun BookAppointmentDialog(
                             ).show()
                         }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.time), // Replace with your time drawable
+                                painter = painterResource(id = R.drawable.time), //time drawable
                                 contentDescription = "Select time",
                                 tint = Color(220, 87, 45) // Set icon color here
                             )
@@ -244,7 +246,7 @@ fun BookAppointmentDialog(
                     supportingText = { timeError?.let { Text(it, color = Color.Red) } }
                 )
 
-                // Language Preference
+                // Set language Preference
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -263,13 +265,13 @@ fun BookAppointmentDialog(
                             .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(8.dp))
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Rounded border
-                            .padding(0.dp), // Remove internal padding to fit the border
+                            .padding(0.dp), // Removed internal padding to fit the border
                         trailingIcon = {
                             IconButton(onClick = { expanded = true }) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.dropdown_arrow), // Replace with your dropdown arrow drawable
+                                    painter = painterResource(id = R.drawable.dropdown_arrow), // dropdown menu arrow
                                     contentDescription = "Select language",
-                                    tint = Color(220, 87, 45), // Set icon color here
+                                    tint = Color(220, 87, 45), // Set icon color
                                     modifier = Modifier.size(24.dp) // Set the size of the icon
                                 )
                             }
@@ -349,3 +351,4 @@ fun BookAppointmentDialog(
 //        }
 //    )
 //}
+

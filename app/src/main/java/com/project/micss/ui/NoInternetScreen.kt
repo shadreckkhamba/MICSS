@@ -1,4 +1,3 @@
-import android.content.Context
 import android.os.Process
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -48,7 +47,7 @@ fun NoInternetScreen() {
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                         Button(
-                            onClick = { exitApp(context) },
+                            onClick = { exitApp() },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(220, 87, 45)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -61,7 +60,7 @@ fun NoInternetScreen() {
     )
 }
 
-private fun exitApp(context: Context) {
+private fun exitApp() {
     // Terminate the app
     Process.killProcess(Process.myPid())
 }

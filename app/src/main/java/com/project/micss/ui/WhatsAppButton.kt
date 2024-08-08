@@ -18,6 +18,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.project.micss.R
 
+
+//navigating to whatsapp
 @Composable
 fun WhatsAppButton(counselorPhoneNumber: String) {
     val context = LocalContext.current
@@ -45,6 +47,6 @@ fun openWhatsApp(context: Context, phoneNumber: String) {
         context.startActivity(intent)
     } catch (e: Exception) {
         e.printStackTrace()
-        // Optionally handle the error, e.g., show a Toast message
+        // Optionally handle the error e.g. show some message
     }
 }

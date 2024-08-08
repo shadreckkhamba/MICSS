@@ -24,13 +24,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.ModalBottomSheetLayout
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
@@ -86,6 +89,7 @@ fun CounselorsScreen(navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
     var selectedCounselor by remember { mutableStateOf<Counselor?>(null) }
     var showDialog by remember { mutableStateOf(false) }
+    var submitInProgress by remember { mutableStateOf(false) }
     val counselors by viewModel<CounselorsViewModel>().counselors.collectAsState()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -141,7 +145,7 @@ fun CounselorsScreen(navController: NavController) {
                                     text = counselor.name,
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.weight(1f) // Takes only the necessary space
+                                    modifier = Modifier.weight(1f) // Take only the necessary space
                                 )
 
                                 IconButton(onClick = {
@@ -252,21 +256,21 @@ fun CounselorsScreen(navController: NavController) {
                         title = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(onClick = { navController.navigate("home") }) {
-                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = "Home", tint = Color.White)
+                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = "Home", tint = Color.Black)
                                 }
-                                Text("MICSS", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+                                Text("MICSS", color = Color.Black, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
                             }
                         },
                         actions = {
                             IconButton(onClick = { /* Handle search action */ }) {
-                                Icon(Icons.Rounded.Search, contentDescription = "Search", tint = Color.White)
+                                Icon(Icons.Rounded.Search, contentDescription = "Search", tint = Color.Black)
                             }
                             IconButton(onClick = { /* Handle filter action */ }) {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_filter), contentDescription = "Filter", tint = Color.White)
+                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_filter), contentDescription = "Filter", tint = Color.Black)
                             }
                         },
                         modifier = Modifier.height(64.dp),
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(220, 87, 45))
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFFFFFFF))
                     )
                 },
                 content = {
@@ -297,7 +301,7 @@ fun CounselorsScreen(navController: NavController) {
                         ) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "No counselors available, check your internet connection",
+                                    text = "No counselors to show, check your internet connection",
                                     color = Color.Gray,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
@@ -333,40 +337,32 @@ fun CounselorsScreen(navController: NavController) {
             )
         }
 
-        // Show BookAppointmentDialog when showDialog is true
+// logic to show BookAppointmentDialog when showDialog is true
         if (showDialog) {
             BookAppointmentDialog(
                 onDismissRequest = { showDialog = false },
                 onConfirm = { date, time, language, age ->
                     val message = "Appointment scheduled with ${selectedCounselor?.name} on $date at $time"
 
-                    scope.launch {
-                        snackbarHostState.showSnackbar(message)
+                    // Prevent multiple submissions appointment
+                    if (!submitInProgress) {
+                        submitInProgress = true
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message)
+                        }
+                        // Navigating to Appointments Screen with appointment details
+                        navController.navigate("appointments") {
+                            popUpTo("counselors") { inclusive = true }
+                        }
+
+                        showDialog = false
+                        submitInProgress = false
                     }
-
-                    // Create the Appointment object and save it
-                    val appointment = Appointment(
-                        date = date,
-                        time = time,
-                        status = "Scheduled",
-                        clientName = "ClientName", // Replace with actual client name
-                        counselorName = selectedCounselor?.name ?: "Unknown",
-                        expertise = (selectedCounselor?.expertise ?: "Unknown").toString(),
-                        profilePictureUrl = selectedCounselor?.profilePictureUrl ?: ""
-                    )
-
-                    viewModel.addAppointment(appointment)
-
-                    // Navigate to AppointmentsScreen with appointment details
-                    navController.navigate("appointments") {
-                        popUpTo("counselors") { inclusive = true }
-                    }
-
-                    showDialog = false
                 },
                 viewModel = viewModel(),
                 counselorName = selectedCounselor?.name ?: "Unknown",
-                expertise = (selectedCounselor?.expertise ?: "Unknown").toString(),
+                expertise = listOf(selectedCounselor?.expertise?.firstOrNull() ?: "Unknown"),
                 profilePictureUrl = selectedCounselor?.profilePictureUrl ?: ""
             )
         }
@@ -390,7 +386,7 @@ fun CounselorsScreen(navController: NavController) {
 }
 
 
-
+//displaying the counselor's name, picture, and expertise
 @Composable
 fun DisplayCounselorInfo(
     counselor: Counselor,

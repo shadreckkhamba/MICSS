@@ -25,7 +25,7 @@ fun AppointmentItem() {
                 .background(Color.White)
         ) {
             Text(
-                text = "com.project.micss.ui.Appointment with Dr. Smith",
+                text = "Appointment with Dr. Khamba",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(4.dp))

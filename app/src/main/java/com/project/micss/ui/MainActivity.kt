@@ -45,9 +45,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             // Set status bar color
             val window: Window = this.window
-            window.statusBarColor = Color(0xFFDC572D).toArgb()
+            window.statusBarColor = Color(0xFFFFFFFF).toArgb()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.insetsController?.setSystemBarsAppearance(
                     WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
             MainScreen()
+            NavGraph()
         }
     }
 }
@@ -147,7 +149,7 @@ fun TopAppBar() {
         title = {
             Text(
                 text = "MICSS",
-                color = Color.White,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold
             )
         },
@@ -156,25 +158,25 @@ fun TopAppBar() {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.notification_icon),
                     contentDescription = "Notifications",
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
             IconButton(onClick = { /* Handle settings click */ }) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.settings_icon),
                     contentDescription = "Settings",
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
             IconButton(onClick = { /* Handle offscreen menu click */ }) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.menu_icon),
                     contentDescription = "Menu",
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFDC572D))
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFFFFFFF))
     )
 }
 
@@ -322,7 +324,7 @@ fun BottomNavigationBar(navController: NavController) {
             },
             label = {
                 Text(
-                    "com.project.micss.ui.Appointment",
+                    "Appointment",
                     color = Color.White
                 )
             },

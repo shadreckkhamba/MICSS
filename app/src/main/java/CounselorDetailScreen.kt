@@ -71,6 +71,6 @@
 //            modifier = Modifier.padding(vertical = 4.dp)
 //        )
 //
-//        // Add more details as needed (e.g., office hours, additional qualifications, etc.)
+//        // more details (office hours, additional qualifications, etc.)
 //    }
 //}

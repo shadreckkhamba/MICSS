@@ -55,6 +55,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx:21.1.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.0.1")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.35.1-alpha")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
@@ -80,9 +82,7 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.8.0-beta05")
     implementation("androidx.compose.material3:material3-android:1.2.1")
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
-
-    // Removed duplicate and conflicting dependencies
-    // Keeping only necessary dependencies
+//    implementation("androidx.media3:media3-common:1.4.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

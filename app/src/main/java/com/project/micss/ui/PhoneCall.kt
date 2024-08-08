@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
+
+//navigating to phone call
 @Composable
 fun CallButton(counselorPhoneNumber: String) {
     val context = LocalContext.current

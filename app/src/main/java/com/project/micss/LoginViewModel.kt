@@ -75,7 +75,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    // Optional: Clear auth result after handling
+    // Optional
     fun clearAuthResult() {
         _authResult.value = null
     }

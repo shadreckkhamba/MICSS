@@ -14,8 +14,9 @@ data class Appointment(
     val time: String = "",
     val clientName: String = "",
     val status: String = "Pending",
-    val expertise: String = "",
+    val expertise: List<String> = listOf(),
     val profilePictureUrl: String = "",
     val age: String = "",
-    val language: String = ""
+    val language: String = "",
+    val userId: String = ""
 )
