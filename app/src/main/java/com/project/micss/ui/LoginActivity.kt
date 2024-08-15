@@ -80,16 +80,25 @@ fun NetworkAndContentScreen(auth: FirebaseAuth) {
             LoginState.LOGIN -> LoginScreen(auth, navigateToAdminLogin = { loginState = LoginState.ADMIN_LOGIN })
             LoginState.ADMIN_LOGIN -> AdminLoginScreen(
                 viewModel = adminLoginViewModel,
-                onBack = { loginState = LoginState.LOGIN },
-                onLoginSuccess = { loginState = LoginState.ADMIN_PORTAL } // This will navigate to the admin portal
+                onBack = {
+                    adminLoginViewModel.resetAuthResult() // Reset auth result when navigating back
+                    loginState = LoginState.LOGIN
+                },
+                onLoginSuccess = { loginState = LoginState.ADMIN_PORTAL }
             )
-            LoginState.ADMIN_PORTAL -> AdminPortalScreen()
-            else -> NoInternetScreen() // or any other screen if needed
+            LoginState.ADMIN_PORTAL -> AdminPortalScreen(
+                onLogout = {
+                    adminLoginViewModel.logoutAdmin() // Clear credentials and reset auth state
+                    loginState = LoginState.ADMIN_LOGIN
+                }
+            )
+            else -> NoInternetScreen()
         }
     } else {
         NoInternetScreen()
     }
 }
+
 
 
 @Composable
@@ -412,4 +421,3 @@ fun handleAuthResult(result: Result<Unit>, context: Context, userId: String) {
         Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }
-

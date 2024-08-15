@@ -39,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.project.micss.R
 
 class MainActivity : ComponentActivity() {
@@ -60,7 +61,6 @@ class MainActivity : ComponentActivity() {
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
             MainScreen()
-            NavGraph()
         }
     }
 }
@@ -70,6 +70,7 @@ fun MainScreen() {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
+
 
     Scaffold(
         topBar = {
@@ -279,7 +280,6 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
-
         BottomNavigationItem(
             icon = {
                 Icon(
@@ -350,8 +350,6 @@ fun BottomNavigationBar(navController: NavController) {
         )
     }
 }
-
-
 
 
 @Composable
