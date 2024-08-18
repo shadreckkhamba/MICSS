@@ -14,22 +14,22 @@ class AdminLoginViewModel : ViewModel() {
     private val _authResult = MutableStateFlow<Boolean?>(null)
     val authResult: StateFlow<Boolean?> get() = _authResult
 
-    private var email = ""
+    private var username = ""
     private var password = ""
 
-    // Function to clear fields
+    // Function to clear fields after logging out
     fun clearField(): String = ""
 
     // Function to set credentials
     fun setCredentials(email: String, password: String) {
-        this.email = email
+        this.username = email
         this.password = password
     }
 
-    fun loginAdmin(email: String, password: String) {
+    fun loginAdmin(username: String, password: String) {
         viewModelScope.launch {
             db.collection("admins")
-                .whereEqualTo("email", email)
+                .whereEqualTo("username", username)
                 .get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
@@ -52,7 +52,7 @@ class AdminLoginViewModel : ViewModel() {
 
     fun logoutAdmin() {
         _authResult.value = null
-        email = ""
+        username = ""
         password = ""
     }
 }

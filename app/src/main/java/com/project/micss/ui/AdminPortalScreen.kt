@@ -1,13 +1,19 @@
 package com.project.micss.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Book
@@ -18,7 +24,11 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,13 +53,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.project.micss.DashboardScreen
+import com.project.micss.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 fun AdminPortalScreen(onLogout: () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -58,6 +77,24 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
     var isLoggingOut by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val isDrawerOpen = drawerState.isOpen
+
+    // State to track refresh trigger
+    val dashboardRefreshTrigger = remember { mutableStateOf(false) }
+    val isRefreshing by remember { derivedStateOf { dashboardRefreshTrigger.value } }
+
+    // Refresh function
+    fun refresh() = scope.launch {
+        dashboardRefreshTrigger.value = true
+        // Simulate a refresh delay and reset trigger
+        delay(1000) // Adjust the delay as needed
+        dashboardRefreshTrigger.value = false
+    }
+
+    // PullRefresh state
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = ::refresh
+    )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -123,7 +160,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text("Admin Portal") },
+                        title = { Text("MICSS Admin") },
                         actions = {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
@@ -137,10 +174,10 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                                 onDismissRequest = { expanded = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Profile") },
+                                    text = { Text("Refresh") },
                                     onClick = {
                                         expanded = false
-                                        // Handle Profile click
+                                        refresh() // Trigger the refresh
                                     }
                                 )
                                 DropdownMenuItem(
@@ -176,6 +213,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .pullRefresh(pullRefreshState) // Apply pull-refresh to the whole content
                             .padding(
                                 start = 16.dp, // Padding for left
                                 end = 16.dp, // Padding for right
@@ -193,12 +231,67 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                         }
 
                         when (selectedSection) {
-                            "Dashboard" -> DashboardScreen()
+                            "Dashboard" -> DashboardScreen(
+                                onNavItemClick = { section -> selectedSection = section },
+                                refreshTrigger = dashboardRefreshTrigger
+                            )
                             "Clients" -> ClientsScreen()
-                            "Counselors" -> CounselorsScreen()
+                            "Counselors" -> CounselorsContent()
                             "Resources" -> ResourcesScreen()
-                            "Appointments" -> AppointmentsScreen()
+                            "Appointments" -> AppointmentContent()
                             "Other Settings" -> OtherSettingsScreen()
+                            "Profile" -> ProfileScreen()
+                            "Settings" -> SettingsScreen()
+                            "Search" -> SearchScreen()
+                        }
+
+                        // PullRefreshIndicator
+                        PullRefreshIndicator(
+                            refreshing = isRefreshing,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            contentColor = Color(0xFF3F51B5)
+                        )
+                    }
+                },
+                bottomBar = {
+                    BottomAppBar(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .height(64.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(Color(0xFFCFCECE)) // Slightly off-white background
+                            .shadow(8.dp, RoundedCornerShape(24.dp)), // Add the shadow effect
+                        containerColor = Color(0xFFCFCECE), // Slightly off-white background color
+                        contentColor = Color(0xFF1A1919) // Color for the content (icons)
+                    ) {
+                        val navItems = listOf("Dashboard", "Search", "Profile", "Settings")
+                        navItems.forEach { item ->
+                            BottomNavigationItem(
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(id = when (item) {
+                                            "Dashboard" -> R.drawable.ic_dashboard
+                                            "Search" -> R.drawable.ic_search
+                                            "Profile" -> R.drawable.ic_profile
+                                            "Settings" -> R.drawable.ic_settings
+                                            else -> R.drawable.ic_dashboard // Default
+                                        }),
+                                        contentDescription = item,
+                                        modifier = Modifier
+                                            .size(38.dp) // Set uniform size for icons
+                                            .padding(bottom = 4.dp), // Space between icon and underline
+                                        tint = if (selectedSection == item) Color(220, 87, 45) else Color(0xFF1A1919) // Primary color for selected item
+                                    )
+                                },
+                                selected = selectedSection == item,
+                                onClick = {
+                                    selectedSection = item
+                                    // Handle navigation logic here if needed
+                                },
+                                selectedContentColor = Color.Transparent, // To ensure underline color is shown
+                                unselectedContentColor = Color(0xFF1A1919) // Color for unselected items
+                            )
                         }
                     }
                 }
@@ -268,35 +361,4 @@ fun DrawerItem(
             style = MaterialTheme.typography.bodyMedium
         )
     }
-}
-
-
-@Composable
-fun DashboardScreen() {
-    Text("Dashboard Content")
-}
-
-@Composable
-fun ClientsScreen() {
-    Text("Clients Content")
-}
-
-@Composable
-fun CounselorsScreen() {
-    Text("Counselors Content")
-}
-
-@Composable
-fun ResourcesScreen() {
-    Text("Resources Content")
-}
-
-@Composable
-fun AppointmentsScreen() {
-    Text("Appointments Content")
-}
-
-@Composable
-fun OtherSettingsScreen() {
-    Text("Other Settings Content")
 }

@@ -34,7 +34,16 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun signUpUser(auth: FirebaseAuth, email: String, password: String, phoneNumber: String, district: String, area: String, sex: String, age: String) {
+    fun signUpUser(
+        auth: FirebaseAuth,
+        email: String,
+        password: String,
+        phoneNumber: String,
+        district: String,
+        area: String,
+        sex: String,
+        age: String
+    ) {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password)
@@ -44,15 +53,16 @@ class LoginViewModel : ViewModel() {
                             val userId = user?.uid
                             if (userId != null) {
                                 val db = FirebaseFirestore.getInstance()
-                                val userData = hashMapOf(
+                                val clientData = hashMapOf(
                                     "phoneNumber" to phoneNumber,
                                     "district" to district,
                                     "area" to area,
                                     "sex" to sex,
                                     "age" to age
                                 )
-                                db.collection("users").document(userId)
-                                    .set(userData)
+                                // Set the additional client data in Firestore
+                                db.collection("clients").document(userId)
+                                    .set(clientData)
                                     .addOnSuccessListener {
                                         _authResult.value = Result.success(Unit)
                                     }

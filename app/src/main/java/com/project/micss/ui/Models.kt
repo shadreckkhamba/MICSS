@@ -20,3 +20,13 @@ data class Appointment(
     val language: String = "",
     val userId: String = ""
 )
+data class DashboardState(
+    val counselorsCount: Int = 0,
+    val clientsCount: Int = 0,
+    val scheduledAppointmentsCount: Int = 0,
+    val canceledAppointmentsCount: Int = 0,
+    val completedAppointmentsCount: Int = 0,
+    val resourcesCount: Int = 0,
+    val stakeholdersCount: Int = 0,
+    val usersCount: Int = 0
+)

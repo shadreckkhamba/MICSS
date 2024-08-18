@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -47,7 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun AdminLoginScreen(viewModel: AdminLoginViewModel = viewModel(), onBack: () -> Unit,
                      onLoginSuccess: () -> Unit) {
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
@@ -108,12 +108,12 @@ fun AdminLoginScreen(viewModel: AdminLoginViewModel = viewModel(), onBack: () ->
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email Icon") },
+                        value = username,
+                        onValueChange = { username = it },
+                        label = { Text("Username") },
+                        leadingIcon = { Icon(imageVector = Icons.Default.PersonOutline, contentDescription = "Email Icon") },
                         modifier = Modifier.fillMaxWidth(),
-                        isError = attemptSubmit && email.isEmpty()
+                        isError = attemptSubmit && username.isEmpty()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -141,12 +141,12 @@ fun AdminLoginScreen(viewModel: AdminLoginViewModel = viewModel(), onBack: () ->
                         onClick = {
                             attemptSubmit = true
                             isLoading = true
-                            if (email.isNotEmpty() && password.isNotEmpty()) {
-                                viewModel.loginAdmin(email, password)
+                            if (username.isNotEmpty() && password.isNotEmpty()) {
+                                viewModel.loginAdmin(username, password)
                             } else {
                                 isLoading = false
-                                Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                                Log.e("AdminLogin", "Email or password is empty")
+                                Toast.makeText(context, "Please enter username and password", Toast.LENGTH_SHORT).show()
+                                Log.e("AdminLogin", "username or password is empty")
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
