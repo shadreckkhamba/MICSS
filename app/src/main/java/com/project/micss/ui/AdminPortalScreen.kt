@@ -60,18 +60,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.project.micss.DashboardScreen
 import com.project.micss.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
-    ExperimentalMaterialApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun AdminPortalScreen(onLogout: () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val navController = rememberNavController()
     var selectedSection by remember { mutableStateOf("Dashboard") }
     var expanded by remember { mutableStateOf(false) }
     var isLoggingOut by remember { mutableStateOf(false) }
@@ -96,6 +99,9 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
         onRefresh = ::refresh
     )
 
+    // Instantiate the CounselorsContentViewModel
+    val viewModel: CounselorsContentViewModel = viewModel()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -112,6 +118,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Dashboard"
                         scope.launch { drawerState.close() }
+                        navController.navigate("dashboard")
                     }
                     DrawerItem(
                         text = "Clients",
@@ -120,6 +127,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Clients"
                         scope.launch { drawerState.close() }
+                        navController.navigate("clients")
                     }
                     DrawerItem(
                         text = "Counselors",
@@ -128,6 +136,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Counselors"
                         scope.launch { drawerState.close() }
+                        navController.navigate("counselors")
                     }
                     DrawerItem(
                         text = "Resources",
@@ -136,6 +145,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Resources"
                         scope.launch { drawerState.close() }
+                        navController.navigate("resources")
                     }
                     DrawerItem(
                         text = "Appointments",
@@ -144,6 +154,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Appointments"
                         scope.launch { drawerState.close() }
+                        navController.navigate("appointments")
                     }
                     DrawerItem(
                         text = "Other Settings",
@@ -152,6 +163,7 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                     ) {
                         selectedSection = "Other Settings"
                         scope.launch { drawerState.close() }
+                        navController.navigate("other_settings")
                     }
                 }
             }
@@ -220,29 +232,44 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                                 top = innerPadding.calculateTopPadding(), // Ensure top padding matches the top bar
                                 bottom = innerPadding.calculateBottomPadding() // Ensure bottom padding is consistent
                             )
-                    ) {
-                        if (isLoggingOut) {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.TopCenter),
-                                color = Color(220, 87, 45)
-                            )
-                        }
+                    )
 
-                        when (selectedSection) {
-                            "Dashboard" -> DashboardScreen(
+
+                    {
+                        NavHost(
+                            navController = navController,
+                            startDestination = "dashboard",
+                            Modifier.fillMaxSize()
+                        ) {
+                            composable("dashboard") { DashboardScreen(
                                 onNavItemClick = { section -> selectedSection = section },
                                 refreshTrigger = dashboardRefreshTrigger
-                            )
-                            "Clients" -> ClientsScreen()
-                            "Counselors" -> CounselorsContent()
-                            "Resources" -> ResourcesScreen()
-                            "Appointments" -> AppointmentContent()
-                            "Other Settings" -> OtherSettingsScreen()
-                            "Profile" -> ProfileScreen()
-                            "Settings" -> SettingsScreen()
-                            "Search" -> SearchScreen()
+                            ) }
+                            composable("clients") { ClientsScreen() }
+                            composable("counselors") { CounselorsContent(
+                                onAddCounselorClick = {
+                                    navController.navigate("add_counselor")
+                                }
+                            ) }
+                            composable("search") { SearchScreen() }
+                            composable("profile") { ProfileScreen() }
+                            composable("settings") { SettingsScreen() }
+                            composable("resources") { ResourcesScreen() }
+                            composable("appointments") { AppointmentContent() }
+                            composable("other_settings") { OtherSettingsScreen() }
+                            composable("add_counselor") {
+                                AddCounselorScreen(
+                                    viewModel = viewModel, // Pass the viewModel here
+                                    onAddCounselor = {
+                                        // Handle add counselor action here
+                                        navController.popBackStack()
+                                    },
+                                    onDismiss = {
+                                        // Handle dismiss action here
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
                         }
 
                         // PullRefreshIndicator
@@ -253,6 +280,9 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                             contentColor = Color(0xFF3F51B5)
                         )
                     }
+
+
+
                 },
                 bottomBar = {
                     BottomAppBar(
@@ -287,7 +317,13 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                                 selected = selectedSection == item,
                                 onClick = {
                                     selectedSection = item
-                                    // Handle navigation logic here if needed
+                                    // Handle navigation logic here
+                                    when (item) {
+                                        "Dashboard" -> navController.navigate("dashboard")
+                                        "Search" -> navController.navigate("search") // Assuming you have a "search" route
+                                        "Profile" -> navController.navigate("profile") // Assuming you have a "profile" route
+                                        "Settings" -> navController.navigate("settings") // Assuming you have a "settings" route
+                                    }
                                 },
                                 selectedContentColor = Color.Transparent, // To ensure underline color is shown
                                 unselectedContentColor = Color(0xFF1A1919) // Color for unselected items
@@ -327,8 +363,6 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
         )
     }
 }
-
-
 
 
 @Composable

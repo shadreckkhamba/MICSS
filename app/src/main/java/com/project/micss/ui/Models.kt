@@ -30,3 +30,16 @@ data class DashboardState(
     val stakeholdersCount: Int = 0,
     val usersCount: Int = 0
 )
+
+data class Counselor(
+    val id: String = "",
+    val name: String = "",
+    val expertise: List<String> = emptyList(),
+    val profilePictureUrl: String = "",
+    val availability: List<String> = emptyList(),
+    val contactDetails: String = "",
+    val phone: String = "",
+    val district: String = "",
+    val email: String = "",
+    val verified: Boolean = false // Renamed field to match Firestore expectations
+)
