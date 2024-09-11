@@ -78,7 +78,6 @@ class LoginActivity : ComponentActivity() {
         FirebaseFirestore.getInstance().firestoreSettings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(false)
             .build()
-
         setContent {
             MaterialTheme {
                 NetworkAndContentScreen(auth)
@@ -89,19 +88,25 @@ class LoginActivity : ComponentActivity() {
 
 @Composable
 fun NetworkAndContentScreen(auth: FirebaseAuth) {
+    // Persist network status
     var isNetworkAvailable by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
     var loginState by remember { mutableStateOf(LoginState.LOGIN) }
+    var initialLoadComplete by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val adminLoginViewModel: AdminLoginViewModel = viewModel()
 
-    // Check network availability
+    // Perform the network check only on the first load
     LaunchedEffect(Unit) {
-        // Simulate network check
-        isNetworkAvailable = NetworkUtils.isNetworkAvailable(context)
-        delay(4000) // Simulate loading time
-        isLoading = false
+        if (!initialLoadComplete) {
+            isNetworkAvailable = NetworkUtils.isNetworkAvailable(context)
+            delay(4000) // Simulate loading time
+            isLoading = false
+            initialLoadComplete = true // Mark the initial load as complete
+        } else {
+            isLoading = false // Ensure loading is false after the initial load
+        }
     }
 
     if (isLoading) {
@@ -112,14 +117,14 @@ fun NetworkAndContentScreen(auth: FirebaseAuth) {
             LoginState.ADMIN_LOGIN -> AdminLoginScreen(
                 viewModel = adminLoginViewModel,
                 onBack = {
-                    adminLoginViewModel.resetAuthResult() // Reset auth result when navigating back
+                    adminLoginViewModel.resetAuthResult()
                     loginState = LoginState.LOGIN
                 },
                 onLoginSuccess = { loginState = LoginState.ADMIN_PORTAL }
             )
             LoginState.ADMIN_PORTAL -> AdminPortalScreen(
                 onLogout = {
-                    adminLoginViewModel.logoutAdmin() // Clear credentials and reset auth state
+                    adminLoginViewModel.logoutAdmin()
                     loginState = LoginState.ADMIN_LOGIN
                 }
             )
@@ -420,7 +425,9 @@ fun LoginScreen(auth: FirebaseAuth, navigateToAdminLogin: () -> Unit, viewModel:
         if (loginState == LoginState.LOGIN) {
             ClickableText(
                 text = AnnotatedString("Admin Portal"),
-                onClick = { navigateToAdminLogin() },
+                onClick = {
+                    navigateToAdminLogin() // This should now correctly navigate to the AdminLoginScreen
+                },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
                     .padding(8.dp),
                 style = MaterialTheme.typography.bodyLarge.copy(color = Color(0, 188, 212, 255))

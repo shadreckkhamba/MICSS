@@ -234,7 +234,6 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                             )
                     )
 
-
                     {
                         NavHost(
                             navController = navController,
@@ -280,8 +279,6 @@ fun AdminPortalScreen(onLogout: () -> Unit) {
                             contentColor = Color(0xFF3F51B5)
                         )
                     }
-
-
 
                 },
                 bottomBar = {
